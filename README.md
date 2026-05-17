@@ -1,4 +1,4 @@
-**Nt** is a basic, bare-bones notes app built with Qt that's designed to be used to quickly jump around and edit plaintext notes in a dedicated directory. For basic journaling or just jotting things down that don't really need complicated formatting.
+**Nt** (pronounced *note*, not *nut*) is a basic, bare-bones notes app built with Qt that's designed to be used to quickly jump around and edit plaintext notes in a dedicated directory. For basic journaling or just jotting things down that don't really need complicated formatting.
 
 **Features**
 - Jump to, create, and delete files and folders from the file tree
