@@ -18,6 +18,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QShortcut>
+#include <QTextDocument>
 
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent), m_mainFont("Titillium Web")
@@ -29,6 +30,11 @@ MainWindow::MainWindow(QWidget *parent) :
     editor = new GTextEdit(this);
     setFont(m_mainFont);
     setFontSize(m_default_font_pt);
+
+    //add anonymous start-up doc to the cache
+    QTextDocument *doc = new QTextDocument(this);
+    m_documentCache.insert("", doc);
+    editor->setDocument(doc);
 
     auto *saveShortcut = new QShortcut(QKeySequence::Save, this);
     connect(saveShortcut, &QShortcut::activated, this, &MainWindow::saveCurrentFile);
@@ -99,6 +105,7 @@ void MainWindow::setupTreeView(QString path)
     connect(treeView, &QTreeView::clicked,
             this, [this](const QModelIndex &index)
             {
+
                 QString path = model->filePath(index);
                 openFile(path);
             }
@@ -216,6 +223,22 @@ void MainWindow::createFolder(QDir dir, QString folderName)
 
 void MainWindow::openFile(QString filename)
 {
+    //outgoing file
+    if (!m_currentFilePath.isEmpty())
+    {
+        m_documentCache[m_currentFilePath] = editor->document();
+    }
+
+    //incoming file
+
+    m_currentFilePath = filename;
+
+    if (m_documentCache.contains(filename))
+    {
+        editor->setDocument(m_documentCache[filename]);
+        return;
+    }
+
     QFile file(filename);
     // check if can load
     if (!file.open(QIODevice::ReadOnly))
@@ -225,8 +248,12 @@ void MainWindow::openFile(QString filename)
     }
 
     const QString contents = QString::fromUtf8(file.readAll());
-    editor->setPlainText(contents);
-    m_currentFilePath = filename;
+    file.close();
+
+    QTextDocument *doc = new QTextDocument(this);
+    doc->setPlainText(contents);
+    m_documentCache.insert(filename, doc);
+    editor->setDocument(doc);
 }
 
 void MainWindow::openFileDialog()
@@ -269,7 +296,7 @@ void MainWindow::saveFileDialog()
 
 void MainWindow::saveCurrentFile()
 {
-    if (m_currentFilePath.isEmpty())
+    if (m_currentFilePath.isEmpty() || m_currentFilePath == "")
         saveFileDialog();
     else
         saveFile(m_currentFilePath);

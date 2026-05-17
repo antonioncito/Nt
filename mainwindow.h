@@ -6,6 +6,7 @@
 
 #include <QFileSystemModel>
 #include <QTreeView>
+#include <QTextDocument>
 
 #include "GTextEdit.h"
 
@@ -32,6 +33,7 @@ private slots:
 private:
     QFont m_mainFont;
     static constexpr int m_default_font_pt = 11;
+    QHash<QString, QTextDocument*> m_documentCache;
     QString m_currentFilePath;
 
     GTextEdit *editor = nullptr;
