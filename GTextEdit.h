@@ -12,7 +12,6 @@ public:
     ~GTextEdit();
 private:
     void wheelEvent(QWheelEvent* event) override;
-    void gZoomIn();
 };
 
 #endif // G_EDITOR_H
